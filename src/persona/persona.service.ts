@@ -1,10 +1,8 @@
 import { Repository } from 'typeorm';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, 
-         InternalServerErrorException, 
-         BadRequestException, 
-         NotFoundException } from '@nestjs/common';    
+import { Injectable, InternalServerErrorException, 
+         BadRequestException, NotFoundException  } from '@nestjs/common';    
 
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
@@ -33,14 +31,13 @@ export class PersonaService {
 
       return {
         statusCode: 201,
-        message: `Successfully created (Persona)`,
+        message: `Persona was successfully created`,
         persona,
       }
 
     } catch (error) {
       this.handleDBExceptions(error);
     }
-
   }
 
   async findAll(filterPersonaDto: FilterPersonaDto) {
@@ -73,9 +70,10 @@ export class PersonaService {
       personas = await this.personaRepository.find();
       
       if (personas.length > 0) {
+        personas = personas.map( ({Foto, ...resto}) => resto);
         return {
           statusCode: 200,
-          message: 'Successfully found personas',
+          message: 'Personas were successfully found',
           personas};
       } 
 
@@ -85,19 +83,43 @@ export class PersonaService {
 
     throw new NotFoundException ({
       statusCode: 401,
-      message: 'Personas not found', });
+      message: 'Personas not found' });
   }
 
   async findOne(id: number) {
     
     try {
       const persona = await this.personaRepository.findOneBy ({ id })
-
+      
       if (persona) {
+        const {Foto, ...resto} = persona;
         return {
           statusCode: 200,
-          message: 'Successfully found persona',
-          persona};
+          message: 'Persona was successfully found',
+          persona: resto};
+      }
+
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+
+    throw new NotFoundException ({
+      statusCode: 401,
+      message: `Persona with id ${id} not found`, });
+  }
+
+  async findFoto(id: number, res) {
+    
+    try {
+      const persona = await this.personaRepository.findOneBy ({ id })
+      
+      if (persona) {
+        const {Foto, ...resto} = persona;
+        res.set({
+          'Content-Type': 'image/png', // set the MIME type
+          'Content-Length': Foto.length, // set the content length
+        });
+        return res.send(Foto);
       }
 
     } catch (error) {
@@ -129,26 +151,24 @@ export class PersonaService {
     });
   }
 
-  async updateFoto(id: number, updatePersonaDto) {
-    console.log(updatePersonaDto);
-    return
-    // try {
-    // const persona = await this.personaRepository.update(id, updatePersonaDto)
-    // if (persona.affected === 1) {
-    //   return {
-    //     statusCode: 200,
-    //     message: `Persona with id ${id} successfully updated`,
-    //     update: updatePersonaDto
-    //   }
-    // }
+  async updateFoto(id: number, Foto: Express.Multer.File) {
+    const FotoString = await Foto.buffer
+    try {
+    const persona = await this.personaRepository.update(id, {Foto: FotoString})
+    if (persona.affected === 1) {
+      return {
+        statusCode: 200,
+        message: `Persona with id ${id} successfully updated`,
+      }
+    }
 
-    // } catch (error) {
-    //   this.handleDBExceptions(error);
-    // }
-    // throw new NotFoundException({
-    //   statusCode: 401,
-    //   message: `Persona with id ${id} not found`,
-    // });
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+    throw new NotFoundException({
+      statusCode: 401,
+      message: `Persona with id ${id} not found`,
+    });
   }
 
   async remove(id: number) {
