@@ -49,6 +49,7 @@ export class PersonaController {
   @ApiResponse( {status: 200, description: `Foto was successfully found`, type: Buffer})
   @ApiResponse( {status: 400, description: `Bad request`})
   @ApiResponse( {status: 401, description: `Persona not found`})
+  @ApiResponse( {status: 402, description: `Foto not found`})
   @ApiResponse( {status: 500, description: `Internal server error`})
   @Header('content-type', 'image/jpeg')
   findFoto(@Param('id', ParseIntPipe) id: string, @Res() res: Response) {
