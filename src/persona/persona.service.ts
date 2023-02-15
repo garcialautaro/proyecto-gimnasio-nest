@@ -131,7 +131,6 @@ export class PersonaService {
           });
         }
       }
-
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -203,13 +202,14 @@ export class PersonaService {
   }
 
   private handleDBExceptions( error: any ) {
-    console.log(error);
-    if(error.driverError.number === 2627) {
-      throw new BadRequestException(error.message)
-    }
-    if(error.driverError.number === 8023) {
-      throw new BadRequestException(`FechaNac must be a valid date (YYYY-MM-DD)`)
+    if(error.driverError) {
+      switch (error.driverError.number) {
+        case 2627 : throw new BadRequestException(error.message);
+        case 8023: throw new BadRequestException(`FechaNac must be a valid date (YYYY-MM-DD)`)
+        default: throw new InternalServerErrorException ('Error interno del servidor')
+      }
     }
     throw new InternalServerErrorException ('Error interno del servidor')
   }
+  
 }
