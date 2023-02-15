@@ -115,11 +115,21 @@ export class PersonaService {
       
       if (persona) {
         const {Foto, ...resto} = persona;
-        res.set({
-          'Content-Type': 'image/png', // set the MIME type
-          'Content-Length': Foto.length, // set the content length
-        });
-        return res.send(Foto);
+        if(Foto) {
+          res.set({
+            'Content-Type': 'image/png', // set the MIME type
+            'Content-Length': Foto.length, // set the content length
+          });
+          return res.send(Foto);
+        } else {
+          res.set({
+            'Content-Type': 'application/json; charset=utf-8',
+          });
+          return res.status(404).send({
+            statusCode: 402,
+            message: `Foto of persona with id ${id} not found`
+          });
+        }
       }
 
     } catch (error) {
