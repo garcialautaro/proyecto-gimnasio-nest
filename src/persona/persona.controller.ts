@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body,
          Patch, Param, Delete, ParseIntPipe,
          Query, UploadedFile, UseInterceptors,
          ParseFilePipe, FileTypeValidator, Header, Res } from '@nestjs/common';
-import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
+import { ApiResponse, ApiTags } from '@nestjs/swagger/dist';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { Persona } from './entities/persona.entity';
@@ -51,7 +51,7 @@ export class PersonaController {
   @ApiResponse( {status: 401, description: `Persona not found`})
   @ApiResponse( {status: 402, description: `Foto not found`})
   @ApiResponse( {status: 500, description: `Internal server error`})
-  @Header('content-type', 'image/jpeg')
+  @Header('content-type', 'image/')
   @Header('content-type', 'application/json; charset=utf-8')
   findFoto(@Param('id', ParseIntPipe) id: string, @Res() res: Response) {
     return this.personaService.findFoto(+id, res);

@@ -204,7 +204,7 @@ export class PersonaService {
   private handleDBExceptions( error: any ) {
     if(error.driverError) {
       switch (error.driverError.number) {
-        case 2627 : throw new BadRequestException(error.message);
+        case 2627 : throw new BadRequestException(error.message);   //? Duplicado de un unique
         case 8023: throw new BadRequestException(`FechaNac must be a valid date (YYYY-MM-DD)`)
         default: throw new InternalServerErrorException ('Error interno del servidor')
       }

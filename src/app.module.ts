@@ -22,6 +22,7 @@ import { PersonaModule } from './persona/persona.module';
     }),
     
     PersonaModule,
+    
   ],
   controllers: [],
   providers: [],

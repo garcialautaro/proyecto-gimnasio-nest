@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsPhoneNumber, MaxLength, IsIn, IsOptional, IsString, MinLength, IsBoolean } from "class-validator";
+import { IsPhoneNumber, MaxLength, IsIn, IsOptional, IsString, MinLength } from "class-validator";
 
 export class FilterPersonaDto {
 
